@@ -489,11 +489,16 @@
 			setuv(300,0,0, 0,300,0, 0.5,0.5, bitfunc).setbitmap("textures/onix-pina.jpg");
 
 
-		var ang = (framenum*15)*3.141592654/180;
-		ang = Math.sin(ang*3.141592654/2);
-		var sin = Math.sin(ang);
-		var cos = Math.cos(ang);
-		light( sin * 300, 80, cos * 300, 1.0);
+                var t = new Date().getTime() + framenum * 1000 * 3600;
+                reset1(new Date(t));
+                //alert(local_sidereal(observer));
+                var sun_altaz = get_sun(observer);
+                var m_pi = 3.141592654/180;
+                //alert(sun_altaz[1]);
+                var x = 100 * Math.cos(sun_altaz[0] * m_pi) * Math.sin(sun_altaz[1] * m_pi);
+                var y = 100 * Math.cos(sun_altaz[0] * m_pi) * Math.cos(sun_altaz[1] * m_pi);
+                var z = 100 * Math.sin(sun_altaz[0] * m_pi);
+		light(x, y, z, 1.0);
 
 		createviewmatrix();
 		

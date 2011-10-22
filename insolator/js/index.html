@@ -1,19 +1,28 @@
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-<script type="text/javascript" src="rt.js"></script>
-<script type="text/javascript" src="sun.js"></script>
+
 <script type="text/javascript" src="util.js"></script>
 <script type="text/javascript" src="math.js"></script>
 <script type="text/javascript" src="datetime.js"></script>
+<script type="text/javascript" src="observer.js"></script>
+<script type="text/javascript" src="planets.js"></script>
+<script type="text/javascript" src="sun.js"></script>
+
+<script type="text/javascript" src="rt.js"></script>
+
+<script type="text/javascript" language="JavaScript">
+   var argstr = location.search.substring(1,location.search.length);
+</script>
+
 <style type="text/css">
 body {
 	background-color: #000;
 	color			: #fff;
-	font			: 12px verdana;
+	font-family		: verdana;
 	line-height		: 18px;
 }
 table {
-	font			: 12px verdana;
+	font-family		: verdana;
 	line-height		: 18px;
 }
 canvas {
@@ -29,7 +38,7 @@ input {
 
 </head>
 
-<body onload="load()">
+<body onload="load(); reset1(new Date());">
 Size: <select onchange="changesize()" id="sizesel">
 		<option value="100x80">100x80</option>
 		<option value="200x160">200x160</option>
@@ -63,6 +72,159 @@ Size: <select onchange="changesize()" id="sizesel">
 	<div id="dbg">&nbsp;</div>
 </td>
 </tr></tbody></table>
+
+<form name="table1" action="javascript:void 0;">
+<table class="bluebox" border="1" cellpadding="5">
+<tr>
+<th colspan="3"><a href="notes.html#Place">Location for observations</a></th>
+<tr>
+<td align="center" colspan="2">Select&nbsp;from&nbsp;this&nbsp;list&nbsp;or&nbsp;enter&nbsp;below</td>
+<td align="center">
+<!-- The Place select is altered below by JavaScript -->
+<select name="Place" onchange= "updateplace()">
+<option>Select your home location</option>
+<option>unknown</option>
+</select></td>
+</tr>
+<tr>
+<td align="left">Name <input type="text" size="20" name="place_name" onchange="updatename()"></td>
+<td align="center">
+ <select name="North" onchange="updatell()">
+ <option>North</option>
+ <option>South</option>
+ </select>
+ <input type="text" size="9" name="Latitude" onchange="updatell()">
+</td>
+<td align="center">
+ <select name="West" onchange="updatell()">
+ <option>West</option>
+ <option>East</option>
+ </select>
+ <input type="text" size="9" name="Longitude" onchange="updatell()">
+</td>
+</tr>
+
+<tr>
+<th colspan="3"><a href="notes.html#Place">Date and time at location for observations</a></th>
+</tr>
+<tr>
+<td align="CENTER">Date <INPUT type="text" size="10" name="local_date"
+    value="" onchange="updatelocal(false)"></td>
+<td align="CENTER" colspan="2">
+  Civil Time <INPUT type="text" size="8" name= "civil_time" value="" onchange="updatelocal(false)">
+  Time Zone <INPUT type="text" size="6" name= "ut_offset" value="" onchange="updatelocal(true)">
+  <select name="TZ_WE" onchange="updatelocal(true)">
+    <option>West</option>
+    <option>East</option>
+  </select>
+ <input type="checkbox" name="dst_check" value="" onclick="updatelocal(true)">DST
+</td>
+</tr>
+
+<tr>
+<td align="center">Julian Date <input type="text" size="10" name= "julian"
+    value="" onchange="jdtozdt()"></td>
+<td align="center">
+ <select name="sel_time_opt" onchange="rewrite1()">
+ <option SELECTED>UTC Time</option>
+ <option>Local Time</option>
+ <option>Solar Time</option>
+ <option>Sidereal Time</option>
+ </select>
+ <INPUT type="text" size="9" name="sel_time" value="" onchange="noupdate()">
+</td>
+<td align="center">
+ <select name="local_diff_opt" onchange="rewrite1()">
+ <option SELECTED>UTC-Civil</option>
+ <option SELECTED>UTC-Local</option>
+ <option>Civil-Local</option>
+ <option>Eqn. of Time</option>
+ </select>
+ <INPUT type="text" size="9" name="local_diff" value="" onchange="noupdate()">
+</td>
+</tr>
+<tr>
+<td colspan="3" align="center">
+<input type="button" name="noon" value="Noon" onclick= "set12(true)">
+<input type="button" name="midnight" value="Midnight" onclick= "set12(false)">
+<input type="button" name="Default" value="Reset" 
+       onclick= "argstr = location.search.substring(1,location.search.length);reset1()">
+</td>
+</tr>
+<tr><td align="center" colspan="3">
+<b><a href="notes.html#Compute">Compute Ephemeris</a></b>
+<input type="button" name="sun" value="Sun"
+       onclick="doSun(observer,0)">
+<input type="button" name="moon" value="Moon"
+       onclick="doMoon(observer,false)">
+<input type="button" name="planets" value="Planets"
+       onclick="doPlanets(observer,0)">
+<input type="button" name="separation" value="Separation"
+       onclick="doAngles(observer)">
+<input type="button" name="stars" value="Bright Stars"
+       onclick="doStars(observer)">
+</td></tr>
+<tr><td align="center" colspan="3">
+<b>Compute Monthly Ephemeris</b>
+<input type="button" name="monthsun" value="Sun"
+       onclick="doSun(observer,2)">
+<input type="button" name="mmoon" value="Moon"
+       onclick="doMoon(observer,2)">
+<input type="button" name="mplanets" value="Planets"
+       onclick="doPlanets(observer,2)">
+</td></tr>
+<tr><td align="center" colspan="3">
+<b>Repeat Daily Ephemeris</b>
+<select name="Times">
+<option>1</option><option>2</option><option>3</option><option>4</option>
+<option>5</option> <option>6</option><option>7</option><option>8</option>
+<option>9</option><option>10</option> <option>11</option><option>12</option>
+<option>13</option><option>14</option><option>15</option> <option>16</option>
+<option>17</option><option>18</option><option>19</option><option>20</option>
+<option>21</option><option>22</option><option>23</option><option>24</option>
+<option>25</option> <option>26</option><option>27</option><option>28</option>
+<option>29</option><option>30</option><option>31</option>
+</select> times separated by
+<select name="Step">
+<option>1</option><option>2</option><option>3</option><option>4</option>
+<option>5</option> <option>6</option><option>7</option><option>8</option>
+<option>9</option><option>10</option> <option>11</option><option>12</option>
+<option>13</option><option>14</option><option>15</option> <option>16</option>
+<option>17</option><option>18</option><option>19</option><option>20</option>
+<option>21</option><option>22</option><option>23</option><option>24</option>
+<option>25</option> <option>26</option><option>27</option><option>28</option>
+<option>29</option><option>30</option><option>31</option>
+</select>&nbsp;days for
+<input type="button" name="sun" value="Sun"
+       onclick="doSun(observer,1)">
+<input type="button" name="moon" value="Moon"
+       onclick="doMoon(observer,true)">
+<input type="button" name="planets" value="Planets"
+       onclick="doPlanets(observer,1)">
+</td>
+</tr>
+</table>
+<table class="bluebox" border="1" cellpadding="5">
+<tr>
+<th colspan="3">User Defined Object</th>
+</tr>
+<tr>
+<td align="center">
+  RA <INPUT type="text" size="5" name="ra" value="00:00" onchange="convertra()">
+  Dec <INPUT type="text" size="6" name="dec" value="+00:00" onchange="convertra()">
+</td>
+<td align="center">
+<input type="button" name="convra" value="<-" onclick="convertaa()">
+<input type="button" name="convaa" value="->" onclick="convertra()">
+</td>
+<td align="center">
+  Alt <INPUT type="text" size="6" name="alt" value="00:00">
+  Az <INPUT type="text" size="6" name= "az" value="00:00">
+</td>
+</tr>
+</table>
+</form>
+</center>
 
 
 </body></html>
