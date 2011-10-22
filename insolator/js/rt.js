@@ -83,7 +83,6 @@
  *	(cr,cg,cb) = colour
  *	d = diffuse weight (0..1)
  *	p = phong weight (0..1)
-diff: rt.js/1: Not a directory
  *	pp = phong power coefficient (higher = more acute specular)
  *	rf = reflectivity (0..1)
  */
@@ -100,7 +99,7 @@ diff: rt.js/1: Not a directory
 		p.x=x0;		p.y=y0;		p.z=z0;
 		p.ux=x1-x0;	p.uy=y1-y0;	p.uz=z1-z0;
 		p.vx=x2-x0;	p.vy=y2-y0;	p.vz=z2-z0;
-		p.cl=cl;    p.d=d;
+		p.cl=cl;	p.d=d;
 		p.p=ph;		p.pp=pp;	p.rf=rf;
 		// cross product to find normal
 		p.nx=p.uy*p.vz - p.uz*p.vy;
@@ -470,7 +469,7 @@ diff: rt.js/1: Not a directory
 		ang = Math.sin(ang*3.141592654/2);
 		var sin = Math.sin(ang);
 		var cos = Math.cos(ang);
-		light( sin * 300, 80, cos * 300, 1.0,1.0,1.0);	// white light
+		light( sin * 300, 80, cos * 300, 1.0);
 
 		createviewmatrix();
 		
@@ -618,7 +617,7 @@ diff: rt.js/1: Not a directory
 			var x,y,xy,p=pix;
 			for (xy=y=0; y<hei; y++) {
 				for (x=0; x<wid; x++,xy+=4) {
-					ctx.fillStyle="rgb("+p[xy]+","+p[xy]+","+p[xy]+")";
+					ctx.fillStyle="rgb("+p[xy]+","+p[xy+1]+","+p[xy+2]+")";
 					ctx.fillRect(x,y,x+1,y+1);
 				}
 			}
@@ -675,7 +674,7 @@ diff: rt.js/1: Not a directory
 		llast = last_li[level];
 		s=ob[obj];
 		a=-1;
-		cr=cg=cb=0;
+		cl=0;
 		if (ndir<0 && s.inside) s=s.inside;
 		if (s.texture) s.texture();
 		// sum the lights
@@ -706,7 +705,7 @@ diff: rt.js/1: Not a directory
 			if (p<0) { if (d==0) continue; p=0; }
 			else { p=Math.pow(p,s.pp)*s.p; }
 			
-			cr += (d*s.cl + p)*li[i].l;
+			cl += (d*s.cl + p)*li[i].i;
 		}
 	}
 	
@@ -721,7 +720,7 @@ diff: rt.js/1: Not a directory
 		for (o=0; o<numli; o++) { if (li[o].intersect()) obj=numob+o; }
 		if (obj>=numob) {
 			o = li[obj-numob];	nz=0.5-nz*2;
-			pcl+=o.l*nz;
+			pcl+=o.i*nz;
 			return true;
 		}
 		if (obj<0) return false;
@@ -790,13 +789,13 @@ diff: rt.js/1: Not a directory
 	}
 
 	function tick() {
-		var x,y, ll=0,L,d,xa,ya;
+		var x,y, ll=0,d,xa,ya;
 		var num=0;
 
 		if (!antialias) {
 			pcl=0;
-			for (xy=curline*wid, y=curline-hh; y<hh && num<2; y++,num++,curline++) {
-				for (x=-wh; x<wh; x++,xy++) {
+			for (xy=curline*wid*4, y=curline-hh; y<hh && num<2; y++,num++,curline++) {
+				for (x=-wh; x<wh; x++,xy+=4) {
 					r.ox = r.dx = ivw*x;
 					r.oy = r.dy = -ivh*y;
 					r.oz = 0;	r.dz = -eyez;
@@ -808,12 +807,14 @@ diff: rt.js/1: Not a directory
 						continue;
 					}
 					pix[xy]=(pcl>1)?255:(pcl*255|0);
+					pix[xy+1]=pix[xy];
+					pix[xy+2]=pix[xy];
 					pcl=0;
 				}
 			}
 		} else {
-			for (xy=curline*wid, y=curline-hh; y<hh && num<2; y++,num++,curline++) {
-				for (x=-wh; x<wh; x++,xy++) {
+			for (xy=curline*wid*4, y=curline-hh; y<hh && num<2; y++,num++,curline++) {
+				for (x=-wh; x<wh; x++,xy+=4) {
 					pcl=0;
 					r.ox=r.dx=(x-0.25)*ivw;	r.oy=r.dy=(-y-0.25)*ivh;	r.oz=0;	r.dz=-eyez;
 					r.odotd=r.odoto=r.ox*r.ox+r.oy*r.oy;	r.ddotd=r.odoto+eyez2;	cast();
@@ -826,6 +827,8 @@ diff: rt.js/1: Not a directory
 						r.ox=r.dx=(x+0.25)*ivw;	r.oy=r.dy=(-y+0.25)*ivh;	r.oz=0;	r.dz=-eyez;
 						r.odotd=r.odoto=r.ox*r.ox+r.oy*r.oy;	r.ddotd=r.odoto+eyez2;	cast();
 						pix[xy]=(pcl>4)?255:(pcl*63.75|0);
+						pix[xy+1]=pix[xy];
+						pix[xy+2]=pix[xy];
 //					} else {
 //						pix[xy]=(pcr>1)?255:(pcr*255|0);
 //						pix[xy+1]=(pcg>1)?255:(pcg*255|0);
