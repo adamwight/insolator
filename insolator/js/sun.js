@@ -3,6 +3,7 @@
 // This code is made freely available but please keep this notice.
 // I accept no liability for any errors in my coding but please
 // let me know of any errors you find. My address is on my home page.
+// Adapted for insolator Adam Wight 2011
 
 // Various functions for the Sun
 
@@ -63,56 +64,6 @@ function EoT(obs) {
   while (E > 1440) E-=1440;
   return E;
 }
-
-// Sun rise/set
-// obs is the observer
-// twilight is one of the following
-// for actual rise and set -0.833
-// for civil rise and set -6.0
-// for nautical rise and set -12.0
-// for astronomical rise and set -18.0
-
-function sunrise(obs,twilight) {
-  // obs is a reference variable make a copy
-  var obscopy=new Object();
-  for (var i in obs) obscopy[i] = obs[i];
-  var riseset=new Array("","");
-  obscopy.hours=12;
-  obscopy.minutes=0;
-  obscopy.seconds=0;
-  lst=local_sidereal(obscopy);
-  earth_xyz=helios(planets[2],obscopy);
-  sun_xyz=new Array(0.0,0.0,0.0);
-  radec=radecr(sun_xyz,earth_xyz,obscopy);
-  var UTsun=12.0+radec[0]-lst;
-  if (UTsun < 0.0) UTsun+=24.0;
-  if (UTsun > 24.0) UTsun-=24.0;
-  cosLHA=(sind(twilight)-sind(obs.latitude)*sind(radec[1])) /
-           (cosd(obs.latitude)*cosd(radec[1]));
-  // Check for midnight sun and midday night.
-  if (cosLHA > 1.0) {
-    riseset[0]="----";
-    riseset[1]="----";
-  } else if (cosLHA < -1.0) {
-    riseset[0]="++++";
-    riseset[1]="++++";
-  } else {
-  // rise/set times allowing for not today.
-    lha=acosd(cosLHA)/15.0;
-    if ((UTsun-lha) < 0.0) {
-      riseset[0]=hmstring(24.0+UTsun-lha);
-    } else {
-      riseset[0]=hmstring(UTsun-lha);
-    }
-    if ((UTsun+lha) > 24.0) {
-      riseset[1]=hmstring(UTsun+lha-24.0);
-    } else {
-      riseset[1]=hmstring(UTsun+lha);
-    }
-  }
-  return(riseset);
-}
-
 
 function doSun(obs,repeat) {
 // doSun creates the Sun window
@@ -183,14 +134,6 @@ function doSun(obs,repeat) {
       writeln("<TD align=center>"+anglestring(altaz[0],false)+"</TD>");
       writeln("<TD align=center>"+anglestring(altaz[1],true)+"</TD>");
       writeln("<TD align=center>"+Math.round(radec[2]*1000.0)/1000.0+"</TD>");
-      // Do the various twilight definitions
-      var twilight= new Array(-0.833,-6.0,-12.0,-18.0);
-      var i;
-      for (var i=0; i<4; i++) {
-        riseset=sunrise(obscopy,twilight[i]);
-        writeln("<TD align=center>"+riseset[0]+"</TD>");
-        writeln("<TD align=center>"+riseset[1]+"</TD>");
-      }
       writeln("</TR>");
       if (repeat==0) break;
       count-=1;
