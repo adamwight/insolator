@@ -298,6 +298,30 @@
 			return true;
 		}
 
+        function open_floor(etage, cl, d,ph,pp,rf)
+        {
+            y = etage * 20;
+            p = plane(0,y,0, 0,y,-100, -200,y,0, cl, d,ph,pp,rf);
+            p.intersect = function()
+            {
+                var t,dx,dy,dz,u,v,ix,iy,iz;
+                if (this.obj==iobj) return;
+                t = (this.D - this.nx*r.ox - this.ny*r.oy - this.nz*r.oz) /
+                        (this.nx*r.dx + this.ny*r.dy + this.nz*r.dz);
+                if (t<=0 || t>=mt)
+                {
+                    this.hit();
+                    //XXX check for hole
+                    dx= ix-this.x;	dy= iy-this.y;	dz= iz-this.z;
+                    u = dx*this.ux + dy*this.uy + dz*this.uz;
+                    if (u<0 || u>this.ul2) return;
+                    v = dx*this.vx + dy*this.vy + dz*this.vz;
+                    if (v<0 || v>this.vl2 || (u/this.ul2+v/this.vl2)>1) return;
+                }
+                mt=t; mo=this.obj;	mndir=1;
+            }
+        }
+                    
 
 /********************
  * Texture functions
