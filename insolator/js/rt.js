@@ -463,16 +463,9 @@
 	}
 
 	
-/************************
- * Scenegraph
- */
 	function scene() {
 		texturewaiting = 0;
 		var s,p,d;
-		
-		//bilinear = getl("bicheck").checked;
-		var bitfunc = bilinear ? bitmap_bi : bitmap;
-		var tilefunc = bilinear ? tilebitmap_bi : tilebitmap;
 		
 		ob = new Array();
 		sp = new Array();
@@ -482,23 +475,7 @@
 		numob = numsp = numpl = numli = numcy = 0;
 
 
-		plane(0,-70,0, 0,-70,-100, -200,-70,0, 1, 0.6,1.0,32, 0.4).
-			setuv(300,0,0, 0,0,300, 0,0, tilefunc).setbitmap("textures/onix-pina.jpg");
-		
-		disc(0,60,140,	0,0,-1,		150, 1, 0.5,1.0,64, 0.6).		// far
-			setuv(300,0,0, 0,300,0, 0.5,0.5, bitfunc).setbitmap("textures/onix-pina.jpg");
-
-
-                var t = new Date().getTime() + framenum * 1000 * 3600;
-                reset1(new Date(t));
-                //alert(local_sidereal(observer));
-                var sun_altaz = get_sun(observer);
-                var m_pi = 3.141592654/180;
-                //alert(sun_altaz[1]);
-                var x = 100 * Math.cos(sun_altaz[0] * m_pi) * Math.sin(sun_altaz[1] * m_pi);
-                var y = 100 * Math.cos(sun_altaz[0] * m_pi) * Math.cos(sun_altaz[1] * m_pi);
-                var z = 100 * Math.sin(sun_altaz[0] * m_pi);
-		light(x, y, z, 1.0);
+                generate_scene_objects();
 
 		createviewmatrix();
 		
