@@ -6,6 +6,7 @@ function Gray64(xres, yres)
     this.m[i] = 0;
   }
   this.rowlength = xres;
+  this.yoffset = yres / 2;
   this.downsample = function()
   {
     return rgb24;
@@ -22,7 +23,7 @@ function Gray64(xres, yres)
 
   this.expose = function(x, y, value)
   {
-    var xy = y*this.rowlength + x;
+    var xy = (y + this.yoffset)*this.rowlength + x;
     return this.m[xy] += value;
   };
 };

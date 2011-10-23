@@ -12,10 +12,14 @@
 
 <script type="text/javascript" src="gray64.js"></script>
 
-<script type="text/javascript" language="JavaScript">
-   var argstr = location.search.substring(1,location.search.length);
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 
-function generate_scene_objects()
+<script type="text/javascript" language="JavaScript">
+argstr = location.search.substring(1,location.search.length);
+
+generate_scene_objects = function()
 {
     //bilinear = getl("bicheck").checked;
     var bitfunc = bilinear ? bitmap_bi : bitmap;
@@ -26,33 +30,101 @@ function generate_scene_objects()
     
     disc(0,60,140,	0,0,-1,		150, 1, 0.5,1.0,64, 0.6).		// far
             setuv(300,0,0, 0,300,0, 0.5,0.5, bitfunc).setbitmap("textures/onix-pina.jpg");
+    //open_floor(1,	1, 0.5,1.0,64, 0.6).
+            //setuv(300,0,0, 0,300,0, 0.5,0.5, bitfunc).setbitmap("textures/onix-pina.jpg");
+    //open_floor(2,	1, 0.5,1.0,64, 0.6).
+            //setuv(300,0,0, 0,300,0, 0.5,0.5, bitfunc).setbitmap("textures/onix-pina.jpg");
+    //open_floor(3,	1, 0.5,1.0,64, 0.6).
+            //setuv(300,0,0, 0,300,0, 0.5,0.5, bitfunc).setbitmap("textures/onix-pina.jpg");
 
-
-    var t = new Date().getTime() + framenum * 1000 * 3600;
-    reset1(new Date(t));
-    //alert(local_sidereal(observer));
-    var sun_altaz = get_sun(observer);
-    var m_pi = 3.141592654/180;
-    //alert(sun_altaz[1]);
-    var x = 200 * Math.cos(sun_altaz[0] * m_pi) * Math.sin(sun_altaz[1] * m_pi);
-    var y = 200 * Math.cos(sun_altaz[0] * m_pi) * Math.cos(sun_altaz[1] * m_pi);
-    var z = 200 * Math.sin(sun_altaz[0] * m_pi);
-    light(x, y, z, 1.0);
-}
+  update_sun();
+};
 
 film = new Gray64(320, 256);
-function putpixel(x, y, pcl)
+putpixel = function(x, y, pcl)
 {
     var cur = (pcl>1)?255:(pcl*255|0);
     var sum = film.expose(x, y, cur);
-    return sum;
+    return cur;
+    //return sum;
+};
+
+$(document).ready(function() {
+  $("#season").slider({
+    max: 366,
+    start:function() {
+      anim = false;
+    },
+    slide:function() {
+      day = $(this).value();
+      update_sun();
+      draw_sun();
+    },
+    stop:function() {
+      renderframe();
+    },
+  });
+
+  $("#hours").slider({
+    max: 24,
+    step: 0.1,
+    start:function() {
+      anim = false;
+    },
+    slide:function() {
+      hour = $(this).slider("value");
+      update_sun();
+      draw_sun();
+    },
+    stop:function() {
+      renderframe();
+    },
+  });
+  /*$("input[name=civil_time]").change(function() {
+    $("#hour").value($(this).);
+  });*/
+  day = new Date().getTime(); //XXX
+  hour = 12;
+  update_sliders();
+  update_sun();
+  load(); /* initialize raytracer */
+});
+function update_sliders()
+{
+  $("#hours").slider("value", hour);
+  $("#season").slider("value", day);
+}
+function update_sun()
+{
+  //li = new Array
+  var t = day + hour * (1000 * 3600);
+  //var t = new Date().getTime() + framenum * 1000 * 3600;
+  reset1(new Date(t));
+  //alert(local_sidereal(observer));
+  var sun_altaz = get_sun(observer);
+  var m_pi = 3.141592654/180;
+  //alert(sun_altaz[1]);
+  var x = 200 * Math.cos(sun_altaz[0] * m_pi) * Math.sin(sun_altaz[1] * m_pi);
+  var z = 200 * Math.cos(sun_altaz[0] * m_pi) * Math.cos(sun_altaz[1] * m_pi);
+  var y = 200 * Math.sin(sun_altaz[0] * m_pi);
+  var intensity = 1.0;
+  light(x, y, z, intensity);
+}
+function draw_sun()
+{
+  var l = li[0];
+  var screen = transform(l.x, l.y, l.z, 0);
+  ctx.beginPath();
+  ctx.arc(75, 75, 15, 0, Math.PI*2, true);
+  ctx.closePath();
+  ctx.fill();
 }
 </script>
 
 <style type="text/css">
 body {
-	background-color: #000;
-	color			: #fff;
+	/*background-color: #000;*/
+	/*color			: #fff;*/
 	font-family		: verdana;
 	line-height		: 18px;
 }
@@ -73,7 +145,7 @@ input {
 
 </head>
 
-<body onload="load(); reset1(new Date());">
+<body>
 Size: <select onchange="changesize()" id="sizesel">
 		<option value="100x80">100x80</option>
 		<option value="200x160">200x160</option>
@@ -107,6 +179,10 @@ Size: <select onchange="changesize()" id="sizesel">
 	<div id="dbg">&nbsp;</div>
 </td>
 </tr></tbody></table>
+
+<div id="hours"></div>
+<br>
+<div id="season"></div>
 
 <form name="table1" action="javascript:void 0;">
 <table class="bluebox" border="1" cellpadding="5">

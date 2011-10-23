@@ -31,7 +31,7 @@
 					{x:0,y:0,z:1},
 					{x:0,y:0,z:0}];
 	
-	var wid, hei;						// canvas width/height
+	//wid, hei;						// canvas width/height
 	var wh, hh, ivw, ivh;
 	
 	var canv, ctx=false, imgdata=false, pix;
@@ -44,13 +44,13 @@
 	var numcy = 0;
 	var pl = new Array();
 	var numpl = 0;
-	var li = new Array();
+	li = new Array();
 	var numli = 0;
 	
 	var ob = new Array();
 	var numob = 0;
 
-	var framenum = 0;
+	framenum = 0;
 	
 	var textures = new Object();
 	var texturewaiting = 0;
@@ -319,7 +319,14 @@
                     if (v<0 || v>this.vl2 || (u/this.ul2+v/this.vl2)>1) return;
                 }
                 mt=t; mo=this.obj;	mndir=1;
-            }
+            };
+            p.setuv = function(ux,uy,uz, vx,vy,vz, uo,vo, texturefunc) {
+                    this.ocl=this.cl;
+                    this.ux=ux;	this.uy=uy;	this.uz=uz;	this.vx=vx;	this.vy=vy;	this.vz=vz;
+                    this.uo=uo;	this.vo=vo;	this.texture = texturefunc;
+                    return this;
+            };
+            return p;
         }
                     
 
