@@ -618,16 +618,6 @@
 			// Hack to get firefox2 to show the updated canvas
 			toggle=1-toggle;
 			getl("canvdiv").style.left=toggle+"px";
-		} else if (curline==0) {
-			//XXX
-			var x,y,xy,p=pix;
-			for (xy=y=0; y<hei; y++) {
-				for (x=0; x<wid; x++,xy+=4) {
-					ctx.fillStyle="rgb("+p[xy]+","+p[xy+1]+","+p[xy+2]+")";
-					ctx.fillRect(x,y,x+1,y+1);
-				}
-			}
-			getl("progress2").innerHTML = "&nbsp;";
 		}
 	}
 
@@ -812,9 +802,10 @@
 						pix[xy]=pix[xy+1]=pix[xy+2]=0;
 						continue;
 					}
-					pix[xy]=(pcl>1)?255:(pcl*255|0);
-					pix[xy+1]=pix[xy];
-					pix[xy+2]=pix[xy];
+                                        var v = putpixel(x, y, pcl);
+					pix[xy]=v;
+					pix[xy+1]=v;
+					pix[xy+2]=v;
 					pcl=0;
 				}
 			}
