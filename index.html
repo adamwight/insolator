@@ -182,6 +182,46 @@ input {
 
 #hours-wrapper {
     text-align: center;
+    padding: 15px;
+}
+
+.ui-slider-handle[href="#"] {
+  background: transparent url("images/bead1.png");
+  background-size: 100%;
+  width: 34px;
+  height: 44px;
+  border: none;
+}
+
+.ui-widget {
+  border: none;
+}
+
+#hours-wrapper .ui-slider-horizontal {
+  background-color: transparent;
+  background-image: url("images/coil.png");
+  background-size: 100%;
+  background-position: 0% 50%;
+  height: 32px;
+}
+
+.ui-slider {
+  background: none;
+}
+
+#season-sibling {
+  background-color: transparent;
+  background-image: url("images/robostalk.png");
+  background-size: 100%;
+  background-position: 50% 50%;
+  background-overflow: visible;
+  background-repeat: no-repeat;
+  height: 251px;
+  width: 100%;
+  margin-top: -125px;
+  /*padding-top: 115px;*/
+  clear: none;
+  float: left;
 }
 </style>
 
@@ -218,15 +258,18 @@ input {
 <form name="table1" action="javascript:void 0;">
 <h3>Date and time at location for observations</h3>
 Date <INPUT type="text" size="10" name="local_date"
-    value="" onchange="updatelocal(false)">
-  Civil Time <INPUT type="text" size="8" name= "civil_time" value="" onchange="updatelocal(false)">
+value="" onchange="updatelocal(false)">
+Civil Time <INPUT type="text" size="8" name= "civil_time" value="" onchange="updatelocal(false)">
 
 <div id="hours-wrapper">Noon
-<div id="hours"></div>
+  <div id="hours"></div>
 </div>
-<span style="">Jan 1st</span>
-<span style="float: right; display: block;">Dec 31st</span>
-<div id="season" style="display:block;"></div>
+<div>
+  <span style="">Jan 1st</span>
+  <span style="float: right; display: block;">Dec 31st</span>
+  <div id="season-sibling"></div>
+  <div id="season" style="display:block;"></div>
+</div>
 
 <h3>Location for observations</h3>
 Select from this list or enter below
