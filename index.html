@@ -1,6 +1,10 @@
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+
 <script type="text/javascript" src="util.js"></script>
 <script type="text/javascript" src="math.js"></script>
 <script type="text/javascript" src="datetime.js"></script>
@@ -12,11 +16,13 @@
 
 <script type="text/javascript" src="gray64.js"></script>
 
-<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-
 <script type="text/javascript" language="JavaScript">
+/*
+ * TODO
+ *  location and viewpoint pickers
+ *  animation
+ *  object selection using reverse ray intersection & Z depth expansion
+ */
 argstr = location.search.substring(1,location.search.length);
 
 generate_scene_objects = function()
@@ -94,6 +100,15 @@ $(document).ready(function() {
   update_sliders();
   update_sun();
   load(); /* initialize raytracer */
+
+  $("#canvdiv").resizable({
+    stop: function() {
+      var w = $(this).width();
+      var h = $(this).height();
+      film = new Gray64(w, h);
+      changesize(w, h);
+    }
+  });
 });
 function update_sliders()
 {
@@ -147,32 +162,40 @@ canvas {
 }
 input {
 	line-height		: 16px;
-	border			: 1px solid #fff;
+	border			: 1px solid;
 	padding			: 0px;
 	margin			: 2px;
+}
+
+#render-wrapper {
+    display: block;
+    clear: none;
+    float: left;
+    margin: 10px;
+}
+
+#time {
+    display: block;
+    float: right;
+    margin: 10px;
+}
+
+#hours-wrapper {
+    text-align: center;
 }
 </style>
 
 </head>
 
 <body>
-Size: <select onchange="changesize()" id="sizesel">
-		<option value="100x80">100x80</option>
-		<option value="200x160">200x160</option>
-		<option value="320x256" selected="selected">320x256</option>
-		<option value="400x320">400x320</option>
-		<option value="500x400">500x400</option>
-		<option value="640x512">640x512</option>
-		<option value="800x640">800x640</option>
-		<option value="1200x960">1200x960</option>
-		<option value="1680x1050">1680x1050 (URMENTAL!)</option>
-	</select>
-	Anti-alias: <input onchange="changeaa()" id="aacheck" type="checkbox">
+
+<div id=render-wrapper>
+<!--	Anti-alias: <input onchange="changeaa()" id="aacheck" type="checkbox">-->
 <!--	Bilinear Filter: <input type=checkbox id="bicheck" />-->
 
 <table border="0" cellpadding="0" cellspacing="0">
 <tbody><tr>
-<td align="center" valign="top">
+<td valign="top">
 	<br> <!-- 400 x 450      800x640    600x480-->
 	<div id="canvdiv" style="width: 320px; height: 256px; border: 1px solid rgb(0, 0, 0); left: 0px;">
 		<canvas id="canv" width="320" height="256"></canvas>
@@ -189,92 +212,44 @@ Size: <select onchange="changesize()" id="sizesel">
 	<div id="dbg">&nbsp;</div>
 </td>
 </tr></tbody></table>
+</div>
 
-<div id="hours"></div>
-<br>
-<div id="season"></div>
-
+<div id="time">
 <form name="table1" action="javascript:void 0;">
-<table class="bluebox" border="1" cellpadding="5">
-<tr>
-<th colspan="3">Location for observations</th>
-<tr>
-<td align="center" colspan="2">Select&nbsp;from&nbsp;this&nbsp;list&nbsp;or&nbsp;enter&nbsp;below</td>
-<td align="center">
+<h3>Date and time at location for observations</h3>
+Date <INPUT type="text" size="10" name="local_date"
+    value="" onchange="updatelocal(false)">
+  Civil Time <INPUT type="text" size="8" name= "civil_time" value="" onchange="updatelocal(false)">
+
+<div id="hours-wrapper">Noon
+<div id="hours"></div>
+</div>
+<span style="">Jan 1st</span>
+<span style="float: right; display: block;">Dec 31st</span>
+<div id="season" style="display:block;"></div>
+
+<h3>Location for observations</h3>
+Select from this list or enter below
 <!-- The Place select is altered below by JavaScript -->
 <select name="Place" onchange= "updateplace()">
 <option>Select your home location</option>
 <option>unknown</option>
-</select></td>
-</tr>
-<tr>
-<td align="left">Name <input type="text" size="20" name="place_name" onchange="updatename()"></td>
-<td align="center">
+</select>
+<br>
+Name <input type="text" size="20" name="place_name" onchange="updatename()">
  <select name="North" onchange="updatell()">
  <option>North</option>
  <option>South</option>
  </select>
  <input type="text" size="9" name="Latitude" onchange="updatell()">
-</td>
-<td align="center">
  <select name="West" onchange="updatell()">
  <option>West</option>
  <option>East</option>
  </select>
  <input type="text" size="9" name="Longitude" onchange="updatell()">
-</td>
-</tr>
 
-<tr>
-<th colspan="3">Date and time at location for observations</th>
-</tr>
-<tr>
-<td align="CENTER">Date <INPUT type="text" size="10" name="local_date"
-    value="" onchange="updatelocal(false)"></td>
-<td align="CENTER" colspan="2">
-  Civil Time <INPUT type="text" size="8" name= "civil_time" value="" onchange="updatelocal(false)">
-  Time Zone <INPUT type="text" size="6" name= "ut_offset" value="" onchange="updatelocal(true)">
-  <select name="TZ_WE" onchange="updatelocal(true)">
-    <option>West</option>
-    <option>East</option>
-  </select>
- <input type="checkbox" name="dst_check" value="" onclick="updatelocal(true)">DST
-</td>
-</tr>
-
-<tr>
-<td align="center">Julian Date <input type="text" size="10" name= "julian"
-    value="" onchange="jdtozdt()"></td>
-<td align="center">
- <select name="sel_time_opt" onchange="rewrite1()">
- <option SELECTED>UTC Time</option>
- <option>Local Time</option>
- <option>Solar Time</option>
- <option>Sidereal Time</option>
- </select>
- <INPUT type="text" size="9" name="sel_time" value="" onchange="noupdate()">
-</td>
-<td align="center">
- <select name="local_diff_opt" onchange="rewrite1()">
- <option SELECTED>UTC-Civil</option>
- <option SELECTED>UTC-Local</option>
- <option>Civil-Local</option>
- <option>Eqn. of Time</option>
- </select>
- <INPUT type="text" size="9" name="local_diff" value="" onchange="noupdate()">
-</td>
-</tr>
-<tr>
-<td colspan="3" align="center">
-<input type="button" name="noon" value="Noon" onclick= "set12(true)">
-<input type="button" name="midnight" value="Midnight" onclick= "set12(false)">
-<input type="button" name="Default" value="Reset" 
-       onclick= "argstr = location.search.substring(1,location.search.length);reset1()">
-</td>
-</tr>
-</table>
 </form>
-</center>
+</div>
 
 
 </body></html>

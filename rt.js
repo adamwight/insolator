@@ -890,25 +890,7 @@
 	}
 	
 
-	function changesize() {
-		var x,y;
-		switch (getl("sizesel").value) {
-		case "100x80" :		x=100;	y=80;	break;
-		case "200x160":		x=200;	y=160;	break;
-		case "320x256":		x=320;	y=256;	break;
-		case "400x320":		x=400;	y=320;	break;
-		case "500x400":		x=500;	y=400;	break;
-		case "640x512":		x=640;	y=512;	break;
-		case "800x640":		x=800;	y=640;	break;
-		case "1200x960":	x=1200;	y=960;	break;
-		case "1680x1050":	x=1680;	y=1050;	break;
-		default:return;
-		}
-
-		var div = getl("canvdiv");
-		div.style.width = x+"px";
-		div.style.height= y+"px";
-		
+	function changesize(x, y) {
 		var canv = getl("canv");
 		if (canv && canv.getContext) {
 			canv.attributes.width.value = x;

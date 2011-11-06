@@ -70,35 +70,18 @@ function get_sun(observer)
   var i;
   var obscopy=new Object(); for (var i in observer) obscopy[i] = observer[i];
   var sun_xyz=new Array(0.0,0.0,0.0);
-    //writeln("<br>Date = "+datestring(obscopy));
-    //writeln(" Time = "+timestring(obscopy,false)+"</h2>");
-    //writeln("<td align=center>Right Ascension</td>");
-    //writeln("<td align=center>Declination</td>");
-    //writeln("<td align=center>Altitude</td>");
-    //writeln("<td align=center>Azimuth</td>");
-    //writeln("<td align=center>Earth Distance</td>");
-    //writeln("<TD colspan=2 align=center>Sun Rise/Set</TD>");
-    //writeln("<TD colspan=2 align=center>Civil Dawn/Dusk</TD>");
-    //writeln("<TD colspan=2 align=center>Nautical Dawn/Dusk</TD>");
-    //writeln("<TD colspan=2 align=center>Astronomical Dawn/Dusk</TD>");
-      var lastdst=checkdst(obscopy);
-        var count=month_length[obscopy.month-1];
-        obscopy.day=1;
-        var firstdst=checkdst(obscopy);
-        if (firstdst!=lastdst) {
-           obscopy.tz+=(firstdst-lastdst);
-           lastdst=firstdst;
-           //writeln("<TR><TH colspan=\"14\">Daylight savings setting corrected</TH></TR>");
-        }
-      var earth_xyz=helios(planets[2],obscopy);
-      var radec=radecr(sun_xyz,earth_xyz,obscopy);
-      var altaz=radtoaa(radec[0],radec[1],obscopy);
-      //writeln("<TD align=center>"+hmdstring(radec[0])+"</TD>");
-      //writeln("<TD align=center>"+anglestring(radec[1],false)+"</TD>");
-      //writeln("<TD align=center>"+anglestring(altaz[0],false)+"</TD>");
-      //writeln("<TD align=center>"+anglestring(altaz[1],true)+"</TD>");
-      //writeln("<TD align=center>"+Math.round(radec[2]*1000.0)/1000.0+"</TD>");
-    return altaz;
+  var lastdst=checkdst(obscopy);
+  obscopy.day=1;
+  var firstdst=checkdst(obscopy);
+  if (firstdst!=lastdst) {
+     obscopy.tz+=(firstdst-lastdst);
+     lastdst=firstdst;
+     //writeln("<TR><TH colspan=\"14\">Daylight savings setting corrected</TH></TR>");
+  }
+  var earth_xyz=helios(planets[2],obscopy);
+  var radec=radecr(sun_xyz,earth_xyz,obscopy);
+  var altaz=radtoaa(radec[0],radec[1],obscopy);
+  return altaz;
 }
 
 // rewrite1 updates table1 date/time info
@@ -108,12 +91,6 @@ function rewrite1() {
     place_name.value=observer.name;
     local_date.value=datestring(observer);
     civil_time.value=timestring(observer,false);
-    if (dst_check.checked==false) {
-      ut_offset.value=hmstring(Math.abs(observer.tz/60.0));
-    } else {
-      ut_offset.value=hmstring(Math.abs((observer.tz+60.0)/60.0));
-    }
-    julian.value=Math.round(100*jd(observer))/100;
     var uts=UTstring(observer);
     // equation of time
     var obscopy=new Object();
@@ -123,62 +100,8 @@ function rewrite1() {
     var dd=jd0(observer.year,observer.month,observer.day)-
            jd0(obscopy.year,obscopy.month,obscopy.day)+1;
     var b=360.0*(dd-81)/365.0;
-    // equation of time in minutes
-    var eot=EoT(observer);
     // local time
     var lts=timestring(observer,true);
-    // If you change the times menu change this
-    // UT
-    if (sel_time_opt.options[0].selected) {
-      sel_time.value=uts;
-    }
-    // local time
-    if (sel_time_opt.options[1].selected) {
-      sel_time.value=lts;
-    }
-    // solar time
-    if (sel_time_opt.options[2].selected) {
-      var st=parsecol(lts)+eot/60.0;
-      if (dst_check.checked) st=st-1;
-      if (st < 0.0) st=24.0+st;
-      sel_time.value=hmsstring(st);
-    }
-    // local sidereal time
-    if (sel_time_opt.options[3].selected) {
-      var lstn=local_sidereal(observer);
-      var lstni=Math.floor(lstn);
-      var lsts=((lstni < 10) ? "0" : "") + lstni;
-      lstn=60*(lstn-lstni); lstni=Math.floor(lstn);
-      lsts+=((lstni < 10) ? ":0" : ":") + lstni;
-      lstn=60*(lstn-lstni); lstni=Math.floor(lstn);
-      lsts+=((lstni < 10) ? ":0" : ":") + lstni;
-      sel_time.value=lsts;
-    }
-    // If you change the time differences menu change this
-    // UTC-Civil
-    if (local_diff_opt.options[0].selected) {
-      var ld=parsecol(uts)-parsecol(civil_time.value);
-      if (ld < 0) ld+=24;
-      if (ld > 12) ld-=24;
-    }
-    // UTC-local time
-    if (local_diff_opt.options[1].selected) {
-      var ld=parsecol(uts)-parsecol(lts);
-      if (ld < 0) ld+=24;
-      if (ld > 12) ld-=24;
-    }
-    // Civil-local time
-    if (local_diff_opt.options[2].selected) {
-      var ld=parsecol(civil_time.value)-parsecol(lts);
-    // Can be wrong near midnight, a quick and dirty fix
-      if (ld >= 12) ld-=24.0;
-      if (ld <= 12) ld+=24.0;
-    }
-    // Equation of Time
-    if (local_diff_opt.options[3].selected) {
-      var ld=eot/60.0;
-    }
-    local_diff.value=hmsstring(ld);
   }
 }
 
@@ -230,23 +153,7 @@ function reset1(now) {
     Longitude.value=llstring(observer.longitude);
     West.options[(observer.longitude>=0.0)?0:1].selected=true;
     month_length[1]=leapyear(observer.year)?29:28;
-    if (observer.tz>=0) {
-      TZ_WE.options[0].selected=true;
-    } else {
-      TZ_WE.options[1].selected=true;
-    }
-    if (DSTseen) {
-      dst_check.checked=DST;
-    } else {
-      dst_check.checked=false;
-      var dst=checkdst(observer);
-      if (dst != 0) {
-        dst_check.checked=true;
-      }
-    }
-    // Now we know where we want to observe set local time to be
-    // equivalent to the PC time which may be in a different zone
-    if (dst_check.checked) observer.tz-=60.0;
+    //XXX if (dst_check.checked) observer.tz-=60.0;
     var PCtime=now.getTime();  // ms since Jan 1 1970
     var PCoffset=now.getTimezoneOffset()*60000;
     // Calculate what PCtime would be for the observer
@@ -258,19 +165,6 @@ function reset1(now) {
     observer.hours = nd.getHours();
     observer.minutes = nd.getMinutes();
     observer.seconds = nd.getSeconds();
-    sel_time_opt[0].selected=true;
-    local_diff_opt[0].selected=true;
   }
   rewrite1();
 }
-
-// convertaa converts alt/az to ra/dec in table1 written by Nick Reid
-
-function convertaa() {
-   var alt=parsecol(document.table1.alt.value);
-   var az=parsecol(document.table1.az.value);
-   var radec=aatorad(alt,az,observer);
-   document.table1.ra.value=hmdstring(radec[0]);
-   document.table1.dec.value=anglestring(radec[1],false);
-}
-
