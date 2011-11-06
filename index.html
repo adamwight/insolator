@@ -1,27 +1,6 @@
 <html><head>
-<!--
-/*
- * TODO
- * dawn and dusk XX extents of slider
- * input fields .onchange -> refresh * form submit
- * film wraps around objects and can be analyzed at once.  V Intersection ++
- * sum light and normalize, render reference energy scale
- * sun projection corrected
- * animation -> preprocess, cache and display lines in red on season bar.
-     snap to extant / multiply extand while rendering
- * location pickers
-     cities, cursor sensitive to c 10px  any rim pt can begin Dnd globe spin
-     location name AC with fallbacks
-   viewpoint picker
-     xor axes
- * object selection using reverse ray intersection & Z depth expansion. modeling
- * move noon needle at DST
- * moon and external ephemeris link
- */
- -->
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
-<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 
@@ -34,8 +13,10 @@
 
 <script type="text/javascript" src="contrib/rt.js"></script>
 
-<script type="text/javascript" src="gray64.js"></script>
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+<link href="style.css" rel="stylesheet" type="text/css"/>
 
+<script type="text/javascript" src="gray64.js"></script>
 <script type="text/javascript" language="JavaScript">
 argstr = location.search.substring(1,location.search.length);
 
@@ -69,7 +50,6 @@ putpixel = function(x, y, pcl)
 };
 
 $(document).ready(function() {
-  film = new Gray64(320, 256);
   $("#season").slider({
     max: 366,
     step: 1,
@@ -88,7 +68,6 @@ $(document).ready(function() {
   });
 
   $("#hours").slider({
-    max: 24,
     step: 0.1,
     start:function() {
       anim = false;
@@ -160,6 +139,10 @@ $(document).ready(function() {
     }
   });
 
+  var w=320, h=256;
+  $("#canv").attr("width",w).attr("height",h);
+  film = new Gray64(w, h);
+  changesize(w, h);
   load(); /* initialize raytracer */
 });
 function update_riseset()
@@ -169,11 +152,14 @@ function update_riseset()
   crap += new Date().getTimezoneOffset() / 60;
   $("#rise").html("Sunrise: "+hmstring(ephem[0] + crap));
   $("#set").html("Sunset: "+hmstring(ephem[1] + crap));
+
+  $("#hours").slider("option", "min", ephem[0] + crap);
+  $("#hours").slider("option", "max", ephem[1] + crap);
+  $("#hours").slider("value", hour);
 }
 function update_sliders()
 {
   update_riseset();
-  $("#hours").slider("value", hour);
   $("#season").slider("value", day);
 }
 function updatename() {
@@ -215,99 +201,6 @@ function draw_sun()
 }
 </script>
 
-<style type="text/css">
-body {
-	/*background-color: #000;*/
-	/*color			: #fff;*/
-	font-family		: verdana;
-	line-height		: 18px;
-}
-table {
-	font-family		: verdana;
-	line-height		: 18px;
-}
-canvas {
-	border			: 1px solid #fff;
-}
-input {
-	line-height		: 16px;
-	/*border			: 1px solid;*/
-	padding			: 0px;
-	margin			: 2px;
-}
-
-#render-wrapper {
-    display: block;
-    clear: none;
-    float: left;
-    margin: 10px;
-}
-
-#time {
-    display: block;
-    float: right;
-    margin: 10px;
-}
-
-#hours-wrapper {
-    text-align: center;
-    padding: 15px;
-}
-
-.ui-slider-handle[href="#"] {
-  background: transparent url("images/bead1.png");
-  background-size: 100%;
-  /*background-position: 0px 7px;*/
-  margin-top: 5px;
-  background-repeat: no-repeat;
-  width: 34px;
-  height: 44px;
-  border: none;
-}
-
-.ui-widget {
-  border: none;
-}
-
-#hours-wrapper .ui-slider-horizontal {
-  background-color: transparent;
-  background-image: url("images/coil.png");
-  background-size: 100%;
-  background-position: 0% 50%;
-  height: 32px;
-}
-
-.ui-slider {
-  background: none;
-}
-
-#season-sibling {
-  background-color: transparent;
-  background-image: url("images/robostalk.png");
-  background-size: 100%;
-  background-position: 50% 50%;
-  background-overflow: visible;
-  background-repeat: no-repeat;
-  height: 251px;
-  width: 100%;
-  margin-top: -125px;
-  margin-left: -20px;
-  /*padding-top: 115px;*/
-  clear: none;
-  float: left;
-}
-
-#progress {
-  font-size: smaller;
-}
-
-.creds {
-clear: both;
-text-align: right;
-display: block;
-}
-</style>
-
 </head>
 
 <body>
@@ -321,8 +214,8 @@ display: block;
 <tbody><tr>
 <td valign="top">
 	<br> <!-- 400 x 450      800x640    600x480-->
-	<div id="canvdiv" style="width: 320px; height: 256px; border: 1px solid rgb(0, 0, 0); left: 0px;">
-		<canvas id="canv" width="320" height="256"></canvas>
+	<div id="canvdiv" style="border: 1px solid rgb(0, 0, 0); left: 0px;">
+		<canvas id="canv"></canvas>
 	</div>
         <br>
 	<div id="progress">Idle</div>

@@ -1,0 +1,90 @@
+body {
+	/*background-color: #000;*/
+	/*color			: #fff;*/
+	font-family		: verdana;
+	line-height		: 18px;
+}
+table {
+	font-family		: verdana;
+	line-height		: 18px;
+}
+canvas {
+	border			: 1px solid #fff;
+}
+input {
+	line-height		: 16px;
+	/*border			: 1px solid;*/
+	padding			: 0px;
+	margin			: 2px;
+}
+
+#render-wrapper {
+    display: block;
+    clear: none;
+    float: left;
+    margin: 10px;
+}
+
+#time {
+    display: block;
+    float: right;
+    margin: 10px;
+}
+
+#hours-wrapper {
+    text-align: center;
+    padding: 15px;
+}
+
+.ui-slider-handle[href="#"] {
+  background: transparent url("images/bead1.png");
+  background-size: 100%;
+  /*background-position: 0px 7px;*/
+  margin-top: 5px;
+  background-repeat: no-repeat;
+  width: 34px;
+  height: 44px;
+  border: none;
+}
+
+.ui-widget {
+  border: none;
+}
+
+#hours-wrapper .ui-slider-horizontal {
+  background-color: transparent;
+  background-image: url("images/coil.png");
+  background-size: 100%;
+  background-position: 0% 50%;
+  height: 32px;
+}
+
+.ui-slider {
+  background: none;
+}
+
+#season-sibling {
+  background-color: transparent;
+  background-image: url("images/robostalk.png");
+  background-size: 100%;
+  background-position: 50% 50%;
+  background-overflow: visible;
+  background-repeat: no-repeat;
+  height: 251px;
+  width: 100%;
+  margin-top: -125px;
+  margin-left: -20px;
+  /*padding-top: 115px;*/
+  clear: none;
+  float: left;
+}
+
+#progress {
+  font-size: smaller;
+}
+
+.creds {
+clear: both;
+text-align: right;
+display: block;
+}

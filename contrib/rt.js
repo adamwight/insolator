@@ -899,7 +899,7 @@
 			canv.height = y;
 			imgdata = false;
 		}
-		load();
+		//load();
 	}
 	
 	function changeaa() { antialias = getl("aacheck").checked; }
