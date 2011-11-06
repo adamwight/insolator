@@ -24,6 +24,7 @@
  *  input fields .onchange -> refresh
  *  animation
  *  object selection using reverse ray intersection & Z depth expansion. modeling
+ *  dawn and dusk marked on the slider
  */
 argstr = location.search.substring(1,location.search.length);
 
@@ -101,7 +102,14 @@ $(document).ready(function() {
   hour = (new Date().getTime() - (year_began + day * (24 * 3600 * 1000))) / (3600 * 1000);
   update_sliders();
   update_sun();
-  load(); /* initialize raytracer */
+
+  with (document.table1) {
+    Place.options.length=0;
+    for (var i=0; i<atlas.length; i++) {
+    Place.options[Place.options.length]=new Option(atlas[i].name);
+    }
+    Place.options[Place.options.length]=new Option("unknown");
+  } 
 
   $("#canvdiv").resizable({
     stop: function() {
@@ -111,11 +119,19 @@ $(document).ready(function() {
       changesize(w, h);
     }
   });
+
+  load(); /* initialize raytracer */
 });
 function update_sliders()
 {
   $("#hours").slider("value", hour);
   $("#season").slider("value", day);
+}
+function updatename() {
+  with (document.table1) {
+    observer.name=place_name.value;
+    Place.options[(Place.options.length)-1].selected=true;
+  }
 }
 function update_sun()
 {
