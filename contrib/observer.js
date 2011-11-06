@@ -31,6 +31,7 @@ function place(name,latitude,ns,longitude,we,zone,dss,dse) {
 // A selection of places
 
 var atlas = new Array(
+  //        name, latitude, is_west, longitude, is_north, , , 
   new place("GB:Greenwich","51:28:38",0,"00:00:00",0,0,"3:5:0","10:5:0"),
   new place("A:Vienna","48:13:00",0,"16:22:00",1,-60,"3:5:0","10:5:0"),
   new place("B:Brussels","50:50:00",0,"4:21:00",1,-60,"3:5:0","10:5:0"),

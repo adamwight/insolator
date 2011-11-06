@@ -1,4 +1,24 @@
 <html><head>
+<!--
+/*
+ * TODO
+ * dawn and dusk XX extents of slider
+ * input fields .onchange -> refresh * form submit
+ * film wraps around objects and can be analyzed at once.  V Intersection ++
+ * sum light and normalize, render reference energy scale
+ * sun projection corrected
+ * animation -> preprocess, cache and display lines in red on season bar.
+     snap to extant / multiply extand while rendering
+ * location pickers
+     cities, cursor sensitive to c 10px  any rim pt can begin Dnd globe spin
+     location name AC with fallbacks
+   viewpoint picker
+     xor axes
+ * object selection using reverse ray intersection & Z depth expansion. modeling
+ * move noon needle at DST
+ * moon and external ephemeris link
+ */
+ -->
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
 <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
@@ -17,15 +37,6 @@
 <script type="text/javascript" src="gray64.js"></script>
 
 <script type="text/javascript" language="JavaScript">
-/*
- * TODO
- *  sum light and normalize, render reference energy scale
- *  location and viewpoint pickers
- *  input fields .onchange -> refresh
- *  animation
- *  object selection using reverse ray intersection & Z depth expansion. modeling
- *  dawn and dusk marked on the slider
- */
 argstr = location.search.substring(1,location.search.length);
 
 generate_scene_objects = function()
@@ -69,6 +80,7 @@ $(document).ready(function() {
       day = $(this).slider("value");
       update_sun();
       draw_sun();
+      update_riseset();
     },
     stop:function() {
       renderframe();
@@ -95,18 +107,46 @@ $(document).ready(function() {
   });*/
   anim=false;
   year_began = new Date("Jan 01 "+new Date().getFullYear()+" 00:00:00").getTime();
-  //year_began -= new Date().getTimezoneOffset() * 60 * 1000;
+  year_began -= new Date().getTimezoneOffset() * 60 * 1000;
   day = Math.floor(
     (new Date().getTime() - year_began) / (24 * 3600 * 1000)
   );
   hour = (new Date().getTime() - (year_began + day * (24 * 3600 * 1000))) / (3600 * 1000);
-  update_sliders();
   update_sun();
+  update_sliders();
 
   with (document.table1) {
     Place.options.length=0;
+      var lookup = {
+         'A': 'Österreich',
+        'AU': 'Australia',
+         'B': 'Belgium',
+        'BR': 'Brasil',
+        'CA': 'Canada',
+        'CH': 'Československo',
+        'DE': 'Germany',
+        'DK': 'Denmark',
+        'ES': 'España',
+        'FR': 'France',
+        'GB': 'England',
+        'HR': 'Herzogovina',
+        'IE': 'Ireland',
+        'IS': 'Iceland',
+        'IT': 'Italia',
+        'LU': 'Luxembourg',
+        'NL': 'Netherlands',
+        'NO': 'Norge',
+        'PL': 'Polska',
+        'PT': 'Portugal',
+        'RO': 'România',
+        'RU': 'Россия',
+        'SE': 'Sweden',
+        'US': 'USA',
+        'ZA': 'South Africa',
+      };
     for (var i=0; i<atlas.length; i++) {
-    Place.options[Place.options.length]=new Option(atlas[i].name);
+      split=atlas[i].name.split(':');
+      Place.options[Place.options.length]=new Option(lookup[split[0]]+': '+split[1]);
     }
     Place.options[Place.options.length]=new Option("unknown");
   } 
@@ -122,8 +162,17 @@ $(document).ready(function() {
 
   load(); /* initialize raytracer */
 });
+function update_riseset()
+{
+  var ephem = SunRiseSet(observer);
+  var crap = (day / 366); // XXX why is riseset off by a day?
+  crap += new Date().getTimezoneOffset() / 60;
+  $("#rise").html("Sunrise: "+hmstring(ephem[0] + crap));
+  $("#set").html("Sunset: "+hmstring(ephem[1] + crap));
+}
 function update_sliders()
 {
+  update_riseset();
   $("#hours").slider("value", hour);
   $("#season").slider("value", day);
 }
@@ -131,6 +180,7 @@ function updatename() {
   with (document.table1) {
     observer.name=place_name.value;
     Place.options[(Place.options.length)-1].selected=true;
+    //XXX refresh coordinates
   }
 }
 function update_sun()
@@ -143,6 +193,7 @@ function update_sun()
   var sun_altaz = get_sun(observer);
   var m_pi = 3.141592654/180;
   //alert(sun_altaz[1]);
+  //XXX ?
   var x = 200 * Math.cos(sun_altaz[0] * m_pi) * Math.sin(sun_altaz[1] * m_pi);
   var z = 200 * Math.cos(sun_altaz[0] * m_pi) * Math.cos(sun_altaz[1] * m_pi);
   var y = 200 * Math.sin(sun_altaz[0] * m_pi);
@@ -180,7 +231,7 @@ canvas {
 }
 input {
 	line-height		: 16px;
-	border			: 1px solid;
+	/*border			: 1px solid;*/
 	padding			: 0px;
 	margin			: 2px;
 }
@@ -206,6 +257,9 @@ input {
 .ui-slider-handle[href="#"] {
   background: transparent url("images/bead1.png");
   background-size: 100%;
+  /*background-position: 0px 7px;*/
+  margin-top: 5px;
+  background-repeat: no-repeat;
   width: 34px;
   height: 44px;
   border: none;
@@ -259,6 +313,7 @@ display: block;
 <body>
 
 <div id=render-wrapper>
+<!-- Save view high-quality: -->
 <!--	Anti-alias: <input onchange="changeaa()" id="aacheck" type="checkbox">-->
 <!--	Bilinear Filter: <input type=checkbox id="bicheck" />-->
 
@@ -285,7 +340,10 @@ Date <INPUT type="text" size="10" name="local_date"
 value="" onchange="updatelocal(false)">
 Civil Time <INPUT type="text" size="8" name= "civil_time" value="" onchange="updatelocal(false)">
 
-<div id="hours-wrapper">Noon
+<div id="hours-wrapper">
+  <span style="float: left; display: block;" id="rise">A</span>
+  Noon
+  <span style="float: right; display: block;" id="set">A</span>
   <div id="hours"></div>
 </div>
 <div>

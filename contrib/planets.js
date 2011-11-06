@@ -156,7 +156,6 @@ function doPlanets(obs,repeat) {
   var obscopy=new Object();
   for (var i in obs) obscopy[i] = obs[i];
   var oname=sitename();
-  var dayno;
   var pwin=window.open("","planets","menubar,scrollbars,resizable");
   with (pwin.document) {
     writeln("<HTML>");

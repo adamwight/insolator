@@ -4,6 +4,6 @@
 
 Acknowledgements
 ==================
-Raytracing - mark.webster@gmail.com
+Raytracing - mark.webster@gmail.com, http://jupiter909.com/mark/jsrt.html
 
-Ephemeris - Peter Hayes http://www.aphayes.pwp.blueyonder.co.uk/
+Ephemeris - Peter Hayes, http://www.aphayes.pwp.blueyonder.co.uk/
