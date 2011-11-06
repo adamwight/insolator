@@ -352,18 +352,18 @@
 		u = fu|0;	fu-=u;	v = fv|0;	fv-=v;
 		
 		p = this.bmp;		i=v*this.bmpw+u;	f=(1-fu)*(1-fv);
-		l=p[i]*f;
+		l=p[i] * f;
 		
 		u=(u+1)%this.bmpw;	i=v*this.bmpw+u;	f=fu*(1-fv);
-		l=p[i]*f;
+		l+=p[i] * f;
 		
 		v=(v+1)%this.bmph;	i=v*this.bmpw+u;	f=fu*fv;
-		l=p[i]*f;
+		l+=p[i] * f;
 		
 		u=(u-1)%this.bmpw;	i=v*this.bmpw+u;	f=(1-fu)*fv;
-		l=p[i]*f;
+		l+=p[i] * f;
 		
-		this.cl = l*this.ocl;
+		this.cl = l*this.ocl / 4;
 	}
 	
 	function bitmap() {

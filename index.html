@@ -19,9 +19,11 @@
 <script type="text/javascript" language="JavaScript">
 /*
  * TODO
+ *  sum light and normalize, render reference energy scale
  *  location and viewpoint pickers
+ *  input fields .onchange -> refresh
  *  animation
- *  object selection using reverse ray intersection & Z depth expansion
+ *  object selection using reverse ray intersection & Z depth expansion. modeling
  */
 argstr = location.search.substring(1,location.search.length);
 
@@ -32,16 +34,16 @@ generate_scene_objects = function()
     var tilefunc = bilinear ? tilebitmap_bi : tilebitmap;
     
     plane(0,-70,0, 0,-70,-100, -200,-70,0, 1, 0.6,1.0,32, 0.4).
-            setuv(300,0,0, 0,0,300, 0,0, tilefunc).setbitmap("textures/onix-pina.jpg");
+            setuv(300,0,0, 0,0,300, 0,0, tilefunc).setbitmap("images/onix-bw.jpg");
     
     disc(0,60,140,	0,0,-1,		150, 1, 0.5,1.0,64, 0.6).		// far
-            setuv(300,0,0, 0,300,0, 0.5,0.5, bitfunc).setbitmap("textures/onix-pina.jpg");
+            setuv(300,0,0, 0,300,0, 0.5,0.5, bitfunc).setbitmap("images/onix-bw.jpg");
     //open_floor(1,	1, 0.5,1.0,64, 0.6).
-            //setuv(300,0,0, 0,300,0, 0.5,0.5, bitfunc).setbitmap("textures/onix-pina.jpg");
+            //setuv(300,0,0, 0,300,0, 0.5,0.5, bitfunc).setbitmap("images/onix-bw.jpg");
     //open_floor(2,	1, 0.5,1.0,64, 0.6).
-            //setuv(300,0,0, 0,300,0, 0.5,0.5, bitfunc).setbitmap("textures/onix-pina.jpg");
+            //setuv(300,0,0, 0,300,0, 0.5,0.5, bitfunc).setbitmap("images/onix-bw.jpg");
     //open_floor(3,	1, 0.5,1.0,64, 0.6).
-            //setuv(300,0,0, 0,300,0, 0.5,0.5, bitfunc).setbitmap("textures/onix-pina.jpg");
+            //setuv(300,0,0, 0,300,0, 0.5,0.5, bitfunc).setbitmap("images/onix-bw.jpg");
 
   update_sun();
 };
@@ -219,9 +221,20 @@ input {
   height: 251px;
   width: 100%;
   margin-top: -125px;
+  margin-left: -20px;
   /*padding-top: 115px;*/
   clear: none;
   float: left;
+}
+
+#progress {
+  font-size: smaller;
+}
+
+.creds {
+clear: both;
+text-align: right;
+display: block;
 }
 </style>
 
@@ -239,13 +252,8 @@ input {
 	<br> <!-- 400 x 450      800x640    600x480-->
 	<div id="canvdiv" style="width: 320px; height: 256px; border: 1px solid rgb(0, 0, 0); left: 0px;">
 		<canvas id="canv" width="320" height="256"></canvas>
-	</div><br>
-	Viewpoint 
-	x:<input value="-85" size="6" id="xangle" type="text">
-	y:<input value="90" size="6" id="yangle" type="text">
-	z:<input value="-260" size="6" id="zangle" type="text">
-	<button onclick="randomview()">Random</button><br><br>
-	<button onclick="load()">Render</button><br><br>
+	</div>
+        <br>
 	<div id="progress">Idle</div>
 	<div id="progress2">&nbsp;</div>
 	<div id="msg">&nbsp;</div>
@@ -291,8 +299,15 @@ Name <input type="text" size="20" name="place_name" onchange="updatename()">
  </select>
  <input type="text" size="9" name="Longitude" onchange="updatell()">
 
+<br>
+	Viewpoint 
+	x:<input value="-85" size="6" id="xangle" type="text">
+	y:<input value="90" size="6" id="yangle" type="text">
+	z:<input value="-260" size="6" id="zangle" type="text">
+	<button onclick="randomview()">Random</button><br><br>
 </form>
 </div>
 
+<span class="creds">Open source project <a href="http://github.com/adamwight/insolator">Insolator</a>.</span>
 
 </body></html>
