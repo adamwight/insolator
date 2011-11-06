@@ -40,7 +40,6 @@ generate_scene_objects = function()
   update_sun();
 };
 
-film = new Gray64(320, 256);
 putpixel = function(x, y, pcl)
 {
     var cur = (pcl>1)?255:(pcl*255|0);
@@ -50,13 +49,15 @@ putpixel = function(x, y, pcl)
 };
 
 $(document).ready(function() {
+  film = new Gray64(320, 256);
   $("#season").slider({
     max: 366,
+    step: 1,
     start:function() {
       anim = false;
     },
     slide:function() {
-      day = $(this).value();
+      day = $(this).slider("value");
       update_sun();
       draw_sun();
     },
@@ -84,8 +85,12 @@ $(document).ready(function() {
     $("#hour").value($(this).);
   });*/
   anim=false;
-  day = new Date().getTime(); //XXX
-  hour = 12;
+  year_began = new Date("Jan 01 "+new Date().getFullYear()+" 00:00:00").getTime();
+  //year_began -= new Date().getTimezoneOffset() * 60 * 1000;
+  day = Math.floor(
+    (new Date().getTime() - year_began) / (24 * 3600 * 1000)
+  );
+  hour = (new Date().getTime() - (year_began + day * (24 * 3600 * 1000))) / (3600 * 1000);
   update_sliders();
   update_sun();
   load(); /* initialize raytracer */
@@ -98,7 +103,7 @@ function update_sliders()
 function update_sun()
 {
   //var t = day + (hour + framenum) * (1000 * 3600);
-  var t = day + hour * (1000 * 3600);
+  var t = year_began + day * (1000 * 3600 * 24) + hour * (1000 * 3600);
   //var t = new Date().getTime() + framenum * 1000 * 3600;
   reset1(new Date(t));
   //alert(local_sidereal(observer));
@@ -192,7 +197,7 @@ Size: <select onchange="changesize()" id="sizesel">
 <form name="table1" action="javascript:void 0;">
 <table class="bluebox" border="1" cellpadding="5">
 <tr>
-<th colspan="3"><a href="notes.html#Place">Location for observations</a></th>
+<th colspan="3">Location for observations</th>
 <tr>
 <td align="center" colspan="2">Select&nbsp;from&nbsp;this&nbsp;list&nbsp;or&nbsp;enter&nbsp;below</td>
 <td align="center">
@@ -221,7 +226,7 @@ Size: <select onchange="changesize()" id="sizesel">
 </tr>
 
 <tr>
-<th colspan="3"><a href="notes.html#Place">Date and time at location for observations</a></th>
+<th colspan="3">Date and time at location for observations</th>
 </tr>
 <tr>
 <td align="CENTER">Date <INPUT type="text" size="10" name="local_date"
@@ -265,77 +270,6 @@ Size: <select onchange="changesize()" id="sizesel">
 <input type="button" name="midnight" value="Midnight" onclick= "set12(false)">
 <input type="button" name="Default" value="Reset" 
        onclick= "argstr = location.search.substring(1,location.search.length);reset1()">
-</td>
-</tr>
-<tr><td align="center" colspan="3">
-<b><a href="notes.html#Compute">Compute Ephemeris</a></b>
-<input type="button" name="sun" value="Sun"
-       onclick="doSun(observer,0)">
-<input type="button" name="moon" value="Moon"
-       onclick="doMoon(observer,false)">
-<input type="button" name="planets" value="Planets"
-       onclick="doPlanets(observer,0)">
-<input type="button" name="separation" value="Separation"
-       onclick="doAngles(observer)">
-<input type="button" name="stars" value="Bright Stars"
-       onclick="doStars(observer)">
-</td></tr>
-<tr><td align="center" colspan="3">
-<b>Compute Monthly Ephemeris</b>
-<input type="button" name="monthsun" value="Sun"
-       onclick="doSun(observer,2)">
-<input type="button" name="mmoon" value="Moon"
-       onclick="doMoon(observer,2)">
-<input type="button" name="mplanets" value="Planets"
-       onclick="doPlanets(observer,2)">
-</td></tr>
-<tr><td align="center" colspan="3">
-<b>Repeat Daily Ephemeris</b>
-<select name="Times">
-<option>1</option><option>2</option><option>3</option><option>4</option>
-<option>5</option> <option>6</option><option>7</option><option>8</option>
-<option>9</option><option>10</option> <option>11</option><option>12</option>
-<option>13</option><option>14</option><option>15</option> <option>16</option>
-<option>17</option><option>18</option><option>19</option><option>20</option>
-<option>21</option><option>22</option><option>23</option><option>24</option>
-<option>25</option> <option>26</option><option>27</option><option>28</option>
-<option>29</option><option>30</option><option>31</option>
-</select> times separated by
-<select name="Step">
-<option>1</option><option>2</option><option>3</option><option>4</option>
-<option>5</option> <option>6</option><option>7</option><option>8</option>
-<option>9</option><option>10</option> <option>11</option><option>12</option>
-<option>13</option><option>14</option><option>15</option> <option>16</option>
-<option>17</option><option>18</option><option>19</option><option>20</option>
-<option>21</option><option>22</option><option>23</option><option>24</option>
-<option>25</option> <option>26</option><option>27</option><option>28</option>
-<option>29</option><option>30</option><option>31</option>
-</select>&nbsp;days for
-<input type="button" name="sun" value="Sun"
-       onclick="doSun(observer,1)">
-<input type="button" name="moon" value="Moon"
-       onclick="doMoon(observer,true)">
-<input type="button" name="planets" value="Planets"
-       onclick="doPlanets(observer,1)">
-</td>
-</tr>
-</table>
-<table class="bluebox" border="1" cellpadding="5">
-<tr>
-<th colspan="3">User Defined Object</th>
-</tr>
-<tr>
-<td align="center">
-  RA <INPUT type="text" size="5" name="ra" value="00:00" onchange="convertra()">
-  Dec <INPUT type="text" size="6" name="dec" value="+00:00" onchange="convertra()">
-</td>
-<td align="center">
-<input type="button" name="convra" value="<-" onclick="convertaa()">
-<input type="button" name="convaa" value="->" onclick="convertra()">
-</td>
-<td align="center">
-  Alt <INPUT type="text" size="6" name="alt" value="00:00">
-  Az <INPUT type="text" size="6" name= "az" value="00:00">
 </td>
 </tr>
 </table>

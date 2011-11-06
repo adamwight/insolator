@@ -260,22 +260,8 @@ function reset1(now) {
     observer.seconds = nd.getSeconds();
     sel_time_opt[0].selected=true;
     local_diff_opt[0].selected=true;
-    Times.options[2].selected=true;
-    Step.options[0].selected=true;
-    ra.value="00:00.0"; dec.value="+00:00";
-    alt.value=""; az.value="";
   }
-  rewrite1(); convertra();
-}
-
-// convertra converts ra/dec to alt/az in table1
-
-function convertra() {
-   var ra=parsecol(document.table1.ra.value);
-   var dec=parsecol(document.table1.dec.value);
-   var altaz=radtoaa(ra,dec,observer);
-   document.table1.alt.value=anglestring(altaz[0],false);
-   document.table1.az.value=anglestring(altaz[1],true);
+  rewrite1();
 }
 
 // convertaa converts alt/az to ra/dec in table1 written by Nick Reid
