@@ -106,6 +106,6 @@ function jdtocd(jd) {
 function g_sidereal(year,month,day) {
   var T=(jd0(year,month,day)-2451545.0)/36525;
   var res=100.46061837+T*(36000.770053608+T*(0.000387933-T/38710000.0));
+
   return rev(res)/15.0;
 }
-
