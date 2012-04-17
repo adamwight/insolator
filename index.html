@@ -102,55 +102,30 @@ $(document).ready(function() {
 
   with (document.table1) {
     Place.options.length=0;
-      var lookup = {
-         'A': 'Österreich',
-        'AU': 'Australia',
-         'B': 'Belgium',
-        'BR': 'Brasil',
-        'CA': 'Canada',
-        'CH': 'Československo',
-        'DE': 'Germany',
-        'DK': 'Denmark',
-        'ES': 'España',
-        'FR': 'France',
-        'GB': 'England',
-        'HR': 'Herzogovina',
-        'IE': 'Ireland',
-        'IS': 'Iceland',
-        'IT': 'Italia',
-        'LU': 'Luxembourg',
-        'NL': 'Netherlands',
-        'NO': 'Norge',
-        'PL': 'Polska',
-        'PT': 'Portugal',
-        'RO': 'România',
-        'RU': 'Россия',
-        'SE': 'Sweden',
-        'US': 'USA',
-        'ZA': 'South Africa',
-      };
     for (var i=0; i<atlas.length; i++) {
       split=atlas[i].name.split(':');
-      Place.options[Place.options.length]=new Option(lookup[split[0]]+': '+split[1]);
+      Place.options[Place.options.length]=new Option(country_name[split[0]]+': '+split[1]);
     }
     Place.options[Place.options.length]=new Option("unknown");
   } 
 
-  $("#canvdiv").resizable({
-    stop: function() {
-      var w = $(this).width();
-      var h = $(this).height();
-      film = new Gray64(w, h);
-      changesize(w, h);
-    }
+  $("#canv").resizable({
+    stop: init_canvas
   });
+  $("#canv").attr("width",320).attr("height",256);
 
-  var w=320, h=256;
-  $("#canv").attr("width",w).attr("height",h);
+  init_canvas();
+});
+function init_canvas()
+{
+  var canvas = $("#canv"),
+      w = canvas.width(),
+      h = canvas.height();
+
   film = new Gray64(w, h);
   changesize(w, h);
-  load(); /* initialize raytracer */
-});
+  load();
+}
 function update_riseset()
 {
   var ephem = SunRiseSet(observer);
@@ -223,9 +198,7 @@ function draw_sun()
 <tbody><tr>
 <td valign="top">
 	<br> <!-- 400 x 450      800x640    600x480-->
-	<div id="canvdiv" style="border: 1px solid rgb(0, 0, 0); left: 0px;">
-		<canvas id="canv"></canvas>
-	</div>
+	<div><canvas id="canv"></canvas></div>
         <br>
 	<div id="progress">Idle</div>
 	<div id="progress2">&nbsp;</div>
