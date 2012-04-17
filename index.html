@@ -81,10 +81,16 @@ $(document).ready(function() {
       renderframe();
     },
   });
+  $("#total").click(function() {
+    total = $(this).attr("checked");
+    update_controls();
+    renderframe();
+  });
   /*$("input[name=civil_time]").change(function() {
     $("#hour").value($(this).);
   });*/
   anim=false;
+  total=false;
   year_began = new Date("Jan 01 "+new Date().getFullYear()+" 00:00:00").getTime();
   year_began -= new Date().getTimezoneOffset() * 60 * 1000;
   day = Math.floor(
@@ -92,7 +98,7 @@ $(document).ready(function() {
   );
   hour = (new Date().getTime() - (year_began + day * (24 * 3600 * 1000))) / (3600 * 1000);
   update_sun();
-  update_sliders();
+  update_controls();
 
   with (document.table1) {
     Place.options.length=0;
@@ -157,10 +163,13 @@ function update_riseset()
   $("#hours").slider("option", "max", ephem[1] + crap);
   $("#hours").slider("value", hour);
 }
-function update_sliders()
+function update_controls()
 {
   update_riseset();
   $("#season").slider("value", day);
+
+  $("#civil_time").attr("disabled", (total ? "disabled" : ""));
+  $("#hours .ui-slider-handle").toggle(!total);
 }
 function updatename() {
   with (document.table1) {
@@ -229,10 +238,12 @@ function draw_sun()
 <div id="time">
 <form name="table1" action="javascript:void 0;">
 <h3>Date and time at location for observations</h3>
-Date <INPUT type="text" size="10" name="local_date"
+<label for="local_date">Date</label><input type=text size="10" name="local_date" id="local_date"
 value="" onchange="updatelocal(false)">
-Civil Time <INPUT type="text" size="8" name= "civil_time" value="" onchange="updatelocal(false)">
+<label for="civil_time">Civil Time</label><input type=text size="8" name="civil_time" id="civil_time" value="" onchange="updatelocal(false)">
 
+<p>
+<label for="total">Daily Total</label><input type=checkbox name="total" id="total" />
 <div id="hours-wrapper">
   <span style="float: left; display: block;" id="rise">A</span>
   Noon
@@ -275,6 +286,12 @@ Name <input type="text" size="20" name="place_name" onchange="updatename()">
 </form>
 </div>
 
-<span class="creds">Open source project <a href="http://github.com/adamwight/insolator">Insolator</a>.</span>
+<span class="creds">Open source project <a href="http://github.com/adamwight/insolator">Insolator</a>.  demo by Adam Wight, cop-y-write 2011
+
+<b>Acknowledgements</b>:
+<a href="http://jupiter909.com/mark/jsrt.html">Raytracing</a> - mark.webster@gmail.com, 
+
+<a href="http://www.aphayes.pwp.blueyonder.co.uk/">Ephemeris</a> - Peter Hayes
+</span>
 
 </body></html>
