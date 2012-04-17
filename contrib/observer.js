@@ -17,6 +17,18 @@
 // Some sites taken from the stellarium database
 // /Applications/Stellarium.app/Contents/Resources/data/cities_Earth.fab
 
+function updateplace() {
+  with (document.table1) {
+    if ((Place.selectedIndex >= 0) && (Place.selectedIndex < atlas.length)) {
+      observer.name=atlas[Place.selectedIndex].name;
+      argstr="Name='"+observer.name+"'";
+      reset1(now);
+    } else {
+      alert("Please change latitude and / or longitude in the table");
+    }
+  }
+}
+
 function place(name,latitude,ns,longitude,we,zone,dss,dse) {
   this.name      = name;
   this.latitude  = latitude;
@@ -115,6 +127,34 @@ var atlas = new Array(
   new place("BR:Rio de Janeiro","22:54:00",1,"43:16:00",0,180,"",""),
   new place("ZA:Cape Town","33:56",1,"18:25",1,-120,"","")
 );
+
+var country_name = {
+   'A': 'Österreich',
+  'AU': 'Australia',
+   'B': 'Belgium',
+  'BR': 'Brasil',
+  'CA': 'Canada',
+  'CH': 'Československo',
+  'DE': 'Germany',
+  'DK': 'Denmark',
+  'ES': 'España',
+  'FR': 'France',
+  'GB': 'England',
+  'HR': 'Herzogovina',
+  'IE': 'Ireland',
+  'IS': 'Iceland',
+  'IT': 'Italia',
+  'LU': 'Luxembourg',
+  'NL': 'Netherlands',
+  'NO': 'Norge',
+  'PL': 'Polska',
+  'PT': 'Portugal',
+  'RO': 'România',
+  'RU': 'Россия',
+  'SE': 'Sweden',
+  'US': 'USA',
+  'ZA': 'South Africa',
+};
 
 // The observatory object holds local date and time,
 // timezone correction in minutes with daylight saving if applicable,
