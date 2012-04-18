@@ -595,7 +595,6 @@
 			if (ctx.getImageData) show = true;
 		}
 		if (!show) {
-			pix = new Array();
 			wid = getl("canvdiv").clientWidth;
 			hei = getl("canvdiv").clientHeight;
 			if (!ctx) {
@@ -783,7 +782,6 @@
 		if (show && !imgdata) {
 			ctx.fillRect(0,0, wid,hei);
 			imgdata = ctx.getImageData(0,0,wid,hei);
-			pix = imgdata.data;
 		} 
 
 		getl("progress").innerHTML = "Rendering: 0%";
@@ -811,31 +809,6 @@
 					}
                                         putpixel(x + wh, y + hh, pcl);
 					pcl=0;
-				}
-			}
-		} else {
-			for (xy=curline*wid*4, y=curline-hh; y<hh && num<2; y++,num++,curline++) {
-				for (x=-wh; x<wh; x++,xy+=4) {
-					pcl=0;
-					r.ox=r.dx=(x-0.25)*ivw;	r.oy=r.dy=(-y-0.25)*ivh;	r.oz=0;	r.dz=-eyez;
-					r.odotd=r.odoto=r.ox*r.ox+r.oy*r.oy;	r.ddotd=r.odoto+eyez2;	cast();
-//					R=lr-pcr; G=lg-pcg; B=lb-pcb; d=R*R+G*G+B*B;
-//					if (d>0.5) {
-						r.ox=r.dx=(x+0.25)*ivw;	r.oy=r.dy=(-y-0.25)*ivh;	r.oz=0;	r.dz=-eyez;
-						r.odotd=r.odoto=r.ox*r.ox+r.oy*r.oy;	r.ddotd=r.odoto+eyez2;	cast();
-						r.ox=r.dx=(x-0.25)*ivw;	r.oy=r.dy=(-y+0.25)*ivh;	r.oz=0;	r.dz=-eyez;
-						r.odotd=r.odoto=r.ox*r.ox+r.oy*r.oy;	r.ddotd=r.odoto+eyez2;	cast();
-						r.ox=r.dx=(x+0.25)*ivw;	r.oy=r.dy=(-y+0.25)*ivh;	r.oz=0;	r.dz=-eyez;
-						r.odotd=r.odoto=r.ox*r.ox+r.oy*r.oy;	r.ddotd=r.odoto+eyez2;	cast();
-						pix[xy]=(pcl>4)?255:(pcl*63.75|0);
-						pix[xy+1]=pix[xy];
-						pix[xy+2]=pix[xy];
-//					} else {
-//						pix[xy]=(pcr>1)?255:(pcr*255|0);
-//						pix[xy+1]=(pcg>1)?255:(pcg*255|0);
-//						pix[xy+2]=(pcb>1)?255:(pcb*255|0);
-//					}
-//					lr=pcr; lg=pcg; lb=pcb;
 				}
 			}
 		}
@@ -881,9 +854,6 @@
 		getl("xangle").value = cam.x;
 		getl("yangle").value = cam.y;
 		getl("zangle").value = cam.z;
-
-		//anim = !anim;	if (anim)
-		//load();
 	}
 	
 
@@ -896,7 +866,4 @@
 			canv.height = y;
 			imgdata = false;
 		}
-		//load();
 	}
-	
-	function changeaa() { antialias = getl("aacheck").checked; }
