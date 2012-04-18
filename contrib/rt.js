@@ -827,10 +827,10 @@
 				refresh();
 				
 			framenum++;
-			
-			if (anim) {
-				timer = setTimeout("renderframe()", 1);
-			}
+                        if (anim) {
+                                timer = setTimeout("animate_frame()", 1);
+                        }
+
 		}
 	}
 	
