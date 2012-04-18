@@ -621,10 +621,11 @@
 		if (curline>0) getl("progress").innerHTML = "Rendering: "+Math.round(curline*100/hei)+"%";
 		
 		if (show) {
+                        film.downsample(imgdata.data);
 			ctx.putImageData(imgdata, 0,0);
 			// Hack to get firefox2 to show the updated canvas
-			toggle=1-toggle;
-			getl("canvdiv").style.left=toggle+"px";
+			//toggle=1-toggle;
+			//getl("canvdiv").style.left=toggle+"px";
 		}
 	}
 
@@ -797,8 +798,8 @@
 
 		if (!antialias) {
 			pcl=0;
-			for (xy=curline*wid*4, y=curline-hh; y<hh && num<2; y++,num++,curline++) {
-				for (x=-wh; x<wh; x++,xy+=4) {
+			for (y=curline-hh; y<hh && num<2; y++,num++,curline++) {
+				for (x=-wh; x<wh; x++) {
 					r.ox = r.dx = ivw*x;
 					r.oy = r.dy = -ivh*y;
 					r.oz = 0;	r.dz = -eyez;
@@ -806,13 +807,9 @@
 					r.ddotd = r.odoto + r.dz*r.dz;
 					
 					if (!cast()) {
-						pix[xy]=pix[xy+1]=pix[xy+2]=0;
 						continue;
 					}
-                                        var v = putpixel(x, y, pcl);
-					pix[xy]=v;
-					pix[xy+1]=v;
-					pix[xy+2]=v;
+                                        putpixel(x + wh, y + hh, pcl);
 					pcl=0;
 				}
 			}

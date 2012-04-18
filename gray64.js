@@ -1,29 +1,42 @@
 function Gray64(xres, yres)
 {
+  var xres = Math.floor(xres),
+      yres = Math.floor(yres),
+      rowlength = xres,
+      yoffset = Math.floor(yres / 2),
+      max_value = 0.000001;
   this.m = new Array(xres * yres);
-  for (var i = 0; i < xres*yres; i++)
-  {
-    this.m[i] = 0;
-  }
-  this.rowlength = xres;
-  this.yoffset = yres / 2;
-  this.downsample = function()
-  {
-    return rgb24;
-  };
 
-  this.add_fraction = function(image/*, divisor = 0x10000*/)
+  this.downsample = function(buf)
   {
-  };
-
-  this.maximum = function(image)
-  {
-    return max_value;
+    for (var x = 0; x < xres; x++)
+    {
+      for (var y = 0; y < yres; y++)
+      {
+        var xy = y * rowlength + x;
+        buf[xy*4] = buf[xy*4 + 1] = buf[xy*4 + 2]
+            = this.m[xy] / max_value;
+      }
+    }
   };
 
   this.expose = function(x, y, value)
   {
-    var xy = (y + this.yoffset)*this.rowlength + x;
+    if (isNaN(value))
+        return;
+    var xy = (y + yoffset)*rowlength + x;
+    max_value += 1 / (xres * yres);
+//if (this.m[xy] != 0) console.log("A");//buf[xy*4]);
     return this.m[xy] += value;
   };
+
+  this.clear = function()
+  {
+    for (var i = 0; i < xres*yres; i++)
+    {
+      this.m[i] = 0;
+    }
+  }
+
+  this.clear();
 };
