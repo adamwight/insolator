@@ -18,7 +18,14 @@
 
 <script type="text/javascript" src="gray64.js"></script>
 <script type="text/javascript" language="JavaScript">
-argstr = location.search.substring(1,location.search.length);
+var argstr = location.search.substring(1,location.search.length),
+    ground_level = [
+      0,-70,0,
+      0,-70,-100,
+      -200,-70,0,
+    ],
+    ground_ = [ 0.6,1.0,32 ];
+
 
 generate_scene_objects = function()
 {
@@ -41,12 +48,9 @@ generate_scene_objects = function()
   update_sun();
 };
 
-putpixel = function(x, y, pcl)
+putpixel = function(x, y, real)
 {
-    var cur = (pcl>1)?255:(pcl*255|0);
-    var sum = film.expose(x, y, cur);
-    return cur;
-    //return sum;
+    film.expose(x, y, real);
 };
 
 $(document).ready(function() {
@@ -129,14 +133,14 @@ function init_canvas()
 }
 function begin_animation()
 {
-  // start at sunrise
+  //TODO start at sunrise
   anim=true;
   timer = setTimeout("animate_frame()", 1);
 }
 
 function animate_frame()
 {
-  //if sun_alt>0
+  //TODO if sun_alt>0
   renderframe();
 
   hour++;
@@ -185,10 +189,11 @@ function update_sun()
   var x = 200 * Math.cos(sun_altaz[0] * m_pi) * Math.sin(sun_altaz[1] * m_pi);
   var z = 200 * Math.cos(sun_altaz[0] * m_pi) * Math.cos(sun_altaz[1] * m_pi);
   var y = 200 * Math.sin(sun_altaz[0] * m_pi);
-  var intensity = 1.0;
+  var intensity = y / 200;
   li = new Array();
   numli = 0;
-  light(x, y, z, intensity);
+  if (intensity > 0)
+    light(x, y, z, intensity);
 }
 function draw_sun()
 {
